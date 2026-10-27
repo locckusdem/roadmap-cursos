@@ -1,12 +1,9 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+## [v0.1.0] - 2026-10-27
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-## [Unreleased]
 ### Added
-- Scaffold inicial del proyecto según TRD (Screaming Architecture).
-- Estructura base para backend (FastAPI) y frontend (React/Vite).
-- Configuración de docker-compose para entorno de desarrollo.
+- Scaffold del proyecto: estructura backend/frontend, docker-compose de dev
+- Backend mínimo: FastAPI con /health y GET /cursos
+- Frontend mínimo: React + Vite consumiendo GET /cursos
+- Integración de servicios con Docker Compose (PostgreSQL 18.6, backend, frontend)
