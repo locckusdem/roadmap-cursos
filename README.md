@@ -9,6 +9,26 @@
 
 ---
 
+## Cómo levantar en desarrollo
+
+Para levantar el entorno completo con PostgreSQL, backend y frontend en una máquina limpia:
+
+```bash
+git clone https://github.com/locckusdem/roadmap-cursos
+cd roadmap-cursos
+cp .env.example .env
+docker compose up --build
+```
+
+### URLs de acceso
+
+- **Frontend:** [http://localhost:5173](http://localhost:5173)
+- **Backend Healthcheck:** [http://localhost:8000/health](http://localhost:8000/health)
+- **Backend API Cursos:** [http://localhost:8000/cursos](http://localhost:8000/cursos)
+- **Base de datos:** `localhost:5432`
+
+---
+
 ## Qué hace
 
 Plataforma comunitaria donde cualquier usuario puede descubrir y postular cursos gratuitos de diversas plataformas web. Tras un proceso de validación para garantizar la calidad del contenido, los cursos pasan a formar parte del catálogo público general, permitiendo que cada estudiante diseñe, organice y gestione sus propios roadmaps de aprendizaje personalizados.
