@@ -57,7 +57,35 @@ Plataforma comunitaria donde cualquier usuario puede descubrir y postular cursos
 |---|---|---|
 | A — Documentación | Repo + 7 documentos técnicos | ✅ Enviada a aprobación el 23/10/2026 |
 | B — Desarrollo del MVP | Ejecución del Implementation Plan | ⏳ Pendiente de aprobación docente |
-| C — Clase 27/10 | Testing, Docker multi-stage, gestión del cambio | ⏳ Pendiente |
+| C — Clase 27/10 | Testing, Docker multi-stage, gestión del cambio | ✅ Completada (T1–T11 verificados) |
+
+### Checklist final de la clase (27/10/2026)
+
+| Ticket | Estado | Rama | Merge | Commit |
+|---|:---:|---|:---:|---|
+| T1 | ✅ | `ticket/T1-reglas-cursos` | ✅ | `test: agregar tests unitarios para reglas de cursos` |
+| T2 | ✅ | `ticket/T2-reglas-roadmaps` | ✅ | `test: agregar tests unitarios para reglas de roadmaps` |
+| T3 | ✅ | `ticket/T3-validacion-aportes` | ✅ | `test: agregar tests unitarios para servicio de validacion de aportes` |
+| T4 | ✅ | `ticket/T4-integracion-curso-repository` | ✅ | `test: agregar tests de integracion para CursoRepository` |
+| T5 | ✅ | `ticket/T5-integracion-flujo-aporte` | ✅ | `test: agregar tests de integracion para flujo de aporte y validacion` |
+| T6 | ✅ | `ticket/T6-tests-frontend-hook` | ✅ | `test: agregar tests de frontend para hook useCursos` |
+| T7 | ✅ | `ticket/T7-dockerfile-backend-multistage` | ✅ | `docker: agregar Dockerfile multi-stage para backend` |
+| T8 | ✅ | `ticket/T8-dockerignore-optimizado` | ✅ | `docker: agregar archivos .dockerignore optimizados` |
+| T9 | ✅ | `ticket/T9-dockerfile-frontend-nginx` | ✅ | `docker: agregar Dockerfile multi-stage para frontend con nginx` |
+| T10 | ✅ | `ticket/T10-compose-con-healthchecks` | ✅ | `docker: agregar healthchecks y dependencias de servicios a compose` |
+| T11 | ✅ | `ticket/T11-cierre-auditable-ciclo` | ✅ | `docs: agregar changelog y retrospectiva de la clase 27/10` |
+
+### Criterios de verificación alcanzados
+
+| Criterio | Mínimo requerido | Resultado obtenido |
+|---|---|---|
+| Tests passing (0 failed, 0 skipped) | 100% | 100% (42 backend + 4 frontend) |
+| Cobertura backend (unit + integration) | $\ge 85\%$ | **96%** |
+| Imagen backend (multi-stage) | < 100 MB | **96.8 MB** |
+| Imagen frontend (multi-stage + nginx) | < 30 MB | **13.9 MB** |
+| Docker Compose | 3/3 servicios healthy | **3/3 healthy** (`postgres`, `backend`, `frontend`) |
+| Commits | 100% Conventional Commits | 100% Conventional Commits en español |
+| Gestión del cambio | Rama por ticket, merges trazables, CHANGELOG | T1–T11 en ramas individuales mergeadas sin ramas huérfanas |
 
 ## Versionado
 
