@@ -1,6 +1,25 @@
-FROM node:20-alpine
+# Stage 1: Builder
+FROM node:20-alpine AS builder
+
 WORKDIR /app
-COPY package.json ./
-RUN npm install
+
+RUN npm install -g pnpm
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml* ./
+RUN pnpm install --frozen-lockfile --allow-build esbuild
+
 COPY . .
-CMD ["npm", "run", "dev", "--", "--host"]
+RUN pnpm run build
+
+# Stage 2: Runtime ultra optimizado con Nginx Alpine Slim (< 30 MB)
+FROM nginx:alpine-slim AS runtime
+
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+  CMD wget -q -O /dev/null http://localhost:80/health || exit 1
+
+CMD ["nginx", "-g", "daemon off;"]
