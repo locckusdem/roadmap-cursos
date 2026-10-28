@@ -1,14 +1,17 @@
-# Stage 1: Builder con Python y uv
+# Stage 1: Builder
 FROM python:3.12-alpine AS builder
 
 WORKDIR /app
+RUN apk add --no-cache binutils
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev --no-install-project && \
-    find /app/.venv -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+    find /app/.venv -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true && \
+    find /app/.venv -type d -name "tests" -exec rm -rf {} + 2>/dev/null || true && \
+    find /app/.venv -name "*.so" -exec strip --strip-unneeded {} + 2>/dev/null || true
 
-# Stage 2: Runtime liviano
+# Stage 2: Runtime ultra liviano (< 100 MB)
 FROM python:3.12-alpine AS runtime
 
 WORKDIR /app

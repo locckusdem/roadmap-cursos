@@ -11,11 +11,18 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-roadmap_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
 
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    image: roadmap-backend:latest
     container_name: roadmap-backend
     restart: always
     ports:
@@ -23,25 +30,33 @@ services:
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-roadmap_db}
     depends_on:
-      - postgres
-    volumes:
-      - ./backend:/app
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    image: roadmap-frontend:latest
     container_name: roadmap-frontend
     restart: always
     ports:
-      - "5173:5173"
-    environment:
-      - VITE_BACKEND_URL=http://backend:8000
+      - "5173:80"
     depends_on:
-      - backend
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:80/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
 
 volumes:
   postgres_data:
