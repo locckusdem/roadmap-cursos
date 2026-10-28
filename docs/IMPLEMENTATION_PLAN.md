@@ -106,3 +106,23 @@ El MVP está Done cuando además: `docker compose up` funciona desde checkout li
 | Reordenamiento inconsistente | Medio | Constraint de posición, transacción y test de dos usuarios/requests |
 | Cookie cross-origin en desarrollo | Medio | CORS explícito, `credentials`, `SameSite` documentado y variables por ambiente |
 | Scope creep de autenticación | Alto | Mantener fuera de alcance OAuth, recuperación y MFA |
+
+
+## 9. Actualización de Estrategia y Aprendizajes — Clase 27/10/2026
+
+A partir de la ejecución de los tickets T1 a T11 de la clase del 27/10/2026, se consolidaron los siguientes aprendizajes y mejoras en la arquitectura:
+
+1. **Aislamiento de Reglas Puras (T1 - T3):** La extracción de validaciones de aporte, máquinas de estado de cursos, ordenamiento de roadmaps y permisos de moderación a módulos libres de dependencias HTTP y ORM (`rules.py`) permitió alcanzar 96% de cobertura con ejecución sub-segundo (0.08s para 31 tests unitarios).
+2. **Hermetismo en Tests de Integración (T4 - T5):** Se adoptó SQLite en memoria con `StaticPool` para las suites de integración de repositorios y flujo de endpoints (`TestClient`), logrando paridad con PostgreSQL sin acoplar los tests al ciclo de vida del daemon de contenedores.
+3. **Optimización Extrema de Imágenes Docker (T7 - T9):**
+   - **Backend:** Se utilizó `python:3.12-alpine` con `uv sync --frozen --no-dev` y descarte de símbolos y archivos `.pyc`, logrando una imagen final de **96.8 MB** (< 100 MB de límite).
+   - **Frontend:** Se implementó `nginx:alpine-slim` con compresión, cabeceras de seguridad y proxy reverso hacia la API, obteniendo una imagen de solo **13.9 MB** (< 30 MB de límite).
+4. **Resiliencia en Compose (T10):** Se configuraron healthchecks sincronizados con `service_healthy` y reconexión con reintentos en el lifespan de FastAPI, eliminando condiciones de carrera durante el levantamiento inicial de PostgreSQL.
+
+## 10. Retrospectiva de la Clase 27/10 (5 Líneas)
+
+El flujo de ramas cortas por ticket con Conventional Commits en español permitió una trazabilidad quirúrgica sin ensuciar la rama de integración.
+La separación estricta de la lógica de dominio en funciones puras facilitó el desarrollo guiado por pruebas bajo el patrón Arrange-Act-Assert.
+Cambiamos sobre la marcha la imagen runtime de Debian Slim a Alpine Slim para garantizar con margen los límites de peso de las imágenes Docker.
+Ajustamos los healthchecks para conectarse explícitamente vía 127.0.0.1, previniendo fallos por resolución de IPv6 en el stack de Alpine.
+Incorporamos happy-dom en lugar de jsdom en Vitest para resolver incompatibilidades de carga de módulos ESM en el runner de pruebas.
