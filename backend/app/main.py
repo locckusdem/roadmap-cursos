@@ -1,3 +1,4 @@
+import time
 from typing import Optional, List, Dict, Any
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends, HTTPException, Header, status
@@ -19,34 +20,38 @@ from app.aportes.rules import (
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Crear tablas si no existen
-    Base.metadata.create_all(bind=engine)
-    # Sembrar cursos iniciales si está vacío
-    db = next(get_db())
-    try:
-        if db.query(Course).count() == 0:
-            c1 = Course(
-                id="1",
-                title="Introducción a Docker y Contenedores",
-                canonical_url="https://youtube.com/watch?v=docker-intro",
-                platform="YouTube",
-                technology="DevOps",
-                level="Principiante",
-                status="PUBLISHED"
-            )
-            c2 = Course(
-                id="2",
-                title="FastAPI y Arquitectura Limpia",
-                canonical_url="https://cursoteca.org/fastapi-clean",
-                platform="Web",
-                technology="Python",
-                level="Intermedio",
-                status="PUBLISHED"
-            )
-            db.add_all([c1, c2])
-            db.commit()
-    finally:
-        db.close()
+    # Crear tablas y sembrar datos iniciales con reintentos para soportar compose
+    for _ in range(5):
+        try:
+            Base.metadata.create_all(bind=engine)
+            db = next(get_db())
+            try:
+                if db.query(Course).count() == 0:
+                    c1 = Course(
+                        id="1",
+                        title="Introducción a Docker y Contenedores",
+                        canonical_url="https://youtube.com/watch?v=docker-intro",
+                        platform="YouTube",
+                        technology="DevOps",
+                        level="Principiante",
+                        status="PUBLISHED"
+                    )
+                    c2 = Course(
+                        id="2",
+                        title="FastAPI y Arquitectura Limpia",
+                        canonical_url="https://cursoteca.org/fastapi-clean",
+                        platform="Web",
+                        technology="Python",
+                        level="Intermedio",
+                        status="PUBLISHED"
+                    )
+                    db.add_all([c1, c2])
+                    db.commit()
+            finally:
+                db.close()
+            break
+        except Exception:
+            time.sleep(1)
     yield
 
 app = FastAPI(title="Roadmap Cursos API", version="0.1.0", lifespan=lifespan)
